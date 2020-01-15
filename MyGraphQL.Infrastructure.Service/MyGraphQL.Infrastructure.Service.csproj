@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyGraphQL.Domain.EF\MyGraphQL.Domain.EF.csproj" />
+    <ProjectReference Include="..\MyGraphQL.Domain.Entity\MyGraphQL.Domain.Entity.csproj" />
+    <ProjectReference Include="..\MyGraphQL.Domain.Models\MyGraphQL.Infrastructure.Models.csproj" />
+    <ProjectReference Include="..\Pc.Commons.Share.Mapper\Pc.Commons.Share.Mapper.csproj" />
+  </ItemGroup>
+
+</Project>
