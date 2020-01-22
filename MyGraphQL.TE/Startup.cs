@@ -1,13 +1,16 @@
 
+using System;
 using System.Threading.Tasks;
 using GraphiQl;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using MyGraphQL.Api.Infrastructure;
 using MyGraphQL.Api.IoC;
 using MyGraphQL.Domain.EF;
@@ -43,13 +46,26 @@ namespace MyGraphQL.Api
         {
             services.AddGraphQLQueries();
             services.AddServices();
-            services.AddHealthChecks().AddCheck<WebApiHealthCheck>("example_health_check");
+            services.AddHealthChecks()
+                .AddCheck<WebApiHealthCheck>("example_health_check");
             services.RegisterIoC(Configuration);
             services.AddControllers().AddNewtonsoftJson(options =>
                    options.SerializerSettings.ContractResolver =
                       new CamelCasePropertyNamesContractResolver());
-        }
 
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidAudience = "api",
+                        ValidIssuer = AppSettingsProvider.ValidIssuer
+                    };
+                });
+        }
 
         private async Task InitializeDatabaseAsync(IApplicationBuilder app)
         {
@@ -78,14 +94,15 @@ namespace MyGraphQL.Api
                 app.UseGraphiQl("/graphql");
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors("default"); 
+            app.UseCors("default");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHealthChecks("/health");
             });
-
-
         }
     }
 }

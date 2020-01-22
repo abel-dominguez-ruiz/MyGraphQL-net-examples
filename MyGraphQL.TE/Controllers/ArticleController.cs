@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyGraphQL.Infrastructure.Models.Models;
 using MyGraphQL.Infrastructure.Service;
 using MyGraphQL.Infrastructure.Service.Interfaces;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyGraphQL.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ArticleController : ControllerBase
