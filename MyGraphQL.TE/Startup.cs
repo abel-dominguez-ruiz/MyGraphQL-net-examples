@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using MyGraphQL.Api.Extensions;
 using MyGraphQL.Api.Infrastructure;
 using MyGraphQL.Api.IoC;
 using MyGraphQL.Domain.EF;
@@ -44,6 +45,7 @@ namespace MyGraphQL.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging();
             services.AddGraphQLQueries();
             services.AddServices();
             services.AddHealthChecks()
@@ -53,18 +55,9 @@ namespace MyGraphQL.Api
                    options.SerializerSettings.ContractResolver =
                       new CamelCasePropertyNamesContractResolver());
 
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidAudience = "api",
-                        ValidIssuer = AppSettingsProvider.ValidIssuer
-                    };
-                });
+            services.AddAuthenticationSSOMiddleware();
+            //services.AddIdentityServerAuthenticationMiddleware();
+            services.AddAuthorizationPolicies();
         }
 
         private async Task InitializeDatabaseAsync(IApplicationBuilder app)
