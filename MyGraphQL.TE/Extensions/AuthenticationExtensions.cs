@@ -34,10 +34,6 @@ namespace MyGraphQL.Api.Extensions
             })
           .AddJwtBearer(options =>
           {
-              options.TokenValidationParameters = new TokenValidationParameters
-              {
-                  NameClaimType = ClaimTypes.NameIdentifier
-              };
               options.RequireHttpsMetadata = false;
               options.SaveToken = true;
               options.TokenValidationParameters = new TokenValidationParameters
@@ -63,15 +59,6 @@ namespace MyGraphQL.Api.Extensions
                                 options.RequireHttpsMetadata = false;
                                 options.SaveToken = true;
                             });
-        }
-
-
-        public static void AddGoogleAuthenticationMiddleware(this AuthenticationBuilder builder)
-        {
-            builder.AddGoogle(options => {
-                options.ClientId = AppSettingsProvider.GoogleClientId;
-                options.ClientSecret = AppSettingsProvider.GoogleClientSecret;
-            });
         }
 
         private static ICollection<SecurityKey> GetSigninKeys()

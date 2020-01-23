@@ -18,7 +18,7 @@ namespace MyGraphQL.Api.Extensions
                 var claims = principal.Claims.ToClaimsDictionary();
                 var result = new UserToken
                 {
-                    IdentityId = claims[ClaimTypes.NameIdentifier] as string,
+                    IdentityId = claims[JwtClaimTypes.Subject] as string,
                     UserName = claims[JwtClaimTypes.PreferredUserName] as string,
                     Email = claims[JwtClaimTypes.Email] as string,
                     FirstName = claims[JwtClaimTypes.GivenName] as string,
