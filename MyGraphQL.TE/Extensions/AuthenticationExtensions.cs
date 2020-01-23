@@ -1,6 +1,8 @@
 ﻿using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -9,6 +11,7 @@ using MyGraphQL.Api.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyGraphQL.Api.Extensions
@@ -29,11 +32,15 @@ namespace MyGraphQL.Api.Extensions
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-          .AddJwtBearer(x =>
+          .AddJwtBearer(options =>
           {
-              x.RequireHttpsMetadata = false;
-              x.SaveToken = true;
-              x.TokenValidationParameters = new TokenValidationParameters
+              options.TokenValidationParameters = new TokenValidationParameters
+              {
+                  NameClaimType = ClaimTypes.NameIdentifier
+              };
+              options.RequireHttpsMetadata = false;
+              options.SaveToken = true;
+              options.TokenValidationParameters = new TokenValidationParameters
               {
                   ValidateLifetime = true,
                   RequireSignedTokens = true,
@@ -59,8 +66,12 @@ namespace MyGraphQL.Api.Extensions
         }
 
 
-        public static void AddGoogleAuthenticationMiddleware(this IServiceCollection services)
+        public static void AddGoogleAuthenticationMiddleware(this AuthenticationBuilder builder)
         {
+            builder.AddGoogle(options => {
+                options.ClientId = AppSettingsProvider.GoogleClientId;
+                options.ClientSecret = AppSettingsProvider.GoogleClientSecret;
+            });
         }
 
         private static ICollection<SecurityKey> GetSigninKeys()

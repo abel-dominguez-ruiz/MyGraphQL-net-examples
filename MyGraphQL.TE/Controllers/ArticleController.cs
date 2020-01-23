@@ -32,6 +32,15 @@ namespace MyGraphQL.Api.Controllers
             return result;
         }
 
+        [Authorize("IsAdmin")]
+        [HttpGet("v2")]
+        public async Task<IEnumerable<ArticleModel>> GetAllv2()
+        {
+            var result = await _readArticleService.GetAll();
+            return result;
+        }
+
+
         [HttpPost]
         public async Task<ArticleModel> CreateArticle(CreateArticleModel model)
         {

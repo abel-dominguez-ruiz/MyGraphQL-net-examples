@@ -14,7 +14,7 @@ namespace MyGraphQL.Api.Extensions
         {
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Api", policy => policy.RequireClaim("scope", "api.full_access"));
+                //options.AddPolicy("ApiPolicies", policy => policy.RequireClaim("scope", "api.full_access"));
                 //options.AddPolicy("ApiPolicies", builder =>
                 //{
                 //    builder.RequireScope("api");

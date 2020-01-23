@@ -56,7 +56,6 @@ namespace MyGraphQL.Api
                       new CamelCasePropertyNamesContractResolver());
 
             services.AddAuthenticationSSOMiddleware();
-            //services.AddIdentityServerAuthenticationMiddleware();
             services.AddAuthorizationPolicies();
         }
 
