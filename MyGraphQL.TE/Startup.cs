@@ -57,6 +57,7 @@ namespace MyGraphQL.Api
 
             services.AddIdentityServerAuthenticationMiddleware();
             services.AddAuthorizationPolicies();
+            services.AddHttpContextAccessor();
         }
 
         private async Task InitializeDatabaseAsync(IApplicationBuilder app)

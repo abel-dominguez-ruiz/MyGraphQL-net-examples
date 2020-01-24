@@ -2,7 +2,8 @@
 using MyGraphQL.Api.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using System.Security.Claims;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace MyGraphQL.Api.AuthorizationRequirements
 {
@@ -14,17 +15,27 @@ namespace MyGraphQL.Api.AuthorizationRequirements
     public class IsAdminHandler : AuthorizationHandler<IsAdminRequirement>
     {
         private readonly ILogger<IsAdminHandler> _logger;
-        public IsAdminHandler(ILogger<IsAdminHandler> logger)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public IsAdminHandler(ILogger<IsAdminHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             IsAdminRequirement requirement)
         {
-            var userInSession = context.User.ToUserToken();
 
+            if (context.User.Claims.Count() == 0)
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
+            var userInSession = context.User.ToUserToken();
+            _httpContextAccessor.HttpContext.Items["user"] = userInSession;
             context.Succeed(requirement);
 
             return Task.CompletedTask;

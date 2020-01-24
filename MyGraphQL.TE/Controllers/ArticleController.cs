@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyGraphQL.Api.Models;
 using MyGraphQL.Infrastructure.Models.Models;
 using MyGraphQL.Infrastructure.Service;
 using MyGraphQL.Infrastructure.Service.Interfaces;
@@ -16,6 +17,7 @@ namespace MyGraphQL.Api.Controllers
 
         private readonly IReadArticleService _readArticleService;
         private readonly IWriteArticleService _writeArticleService;
+        protected UserToken userToken => HttpContext.Items["user"] as UserToken;
 
         public ArticleController(
             IReadArticleService readArticleService,
