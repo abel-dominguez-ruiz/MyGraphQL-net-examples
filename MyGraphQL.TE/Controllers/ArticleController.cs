@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MyGraphQL.Api.Models;
 using MyGraphQL.Infrastructure.Models.Models;
 using MyGraphQL.Infrastructure.Service;
 using MyGraphQL.Infrastructure.Service.Interfaces;
@@ -7,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyGraphQL.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ArticleController : ControllerBase
@@ -14,6 +17,7 @@ namespace MyGraphQL.Api.Controllers
 
         private readonly IReadArticleService _readArticleService;
         private readonly IWriteArticleService _writeArticleService;
+        protected UserToken userToken => HttpContext.Items["user"] as UserToken;
 
         public ArticleController(
             IReadArticleService readArticleService,
@@ -29,6 +33,15 @@ namespace MyGraphQL.Api.Controllers
             var result = await _readArticleService.GetAll();
             return result;
         }
+
+        [Authorize("IsAdmin")]
+        [HttpGet("v2")]
+        public async Task<IEnumerable<ArticleModel>> GetAllv2()
+        {
+            var result = await _readArticleService.GetAll();
+            return result;
+        }
+
 
         [HttpPost]
         public async Task<ArticleModel> CreateArticle(CreateArticleModel model)

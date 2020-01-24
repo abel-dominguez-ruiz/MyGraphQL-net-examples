@@ -13,4 +13,5 @@ namespace MyGraphQL.Infrastructure.Models.Models
 
         public ArticleInfoModel ArticleInfo { get; set; }
     }
+
 }

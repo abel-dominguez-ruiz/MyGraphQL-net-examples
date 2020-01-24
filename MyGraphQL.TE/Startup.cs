@@ -1,13 +1,17 @@
 
+using System;
 using System.Threading.Tasks;
 using GraphiQl;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using MyGraphQL.Api.Extensions;
 using MyGraphQL.Api.Infrastructure;
 using MyGraphQL.Api.IoC;
 using MyGraphQL.Domain.EF;
@@ -41,15 +45,20 @@ namespace MyGraphQL.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging();
             services.AddGraphQLQueries();
             services.AddServices();
-            services.AddHealthChecks().AddCheck<WebApiHealthCheck>("example_health_check");
+            services.AddHealthChecks()
+                .AddCheck<WebApiHealthCheck>("example_health_check");
             services.RegisterIoC(Configuration);
             services.AddControllers().AddNewtonsoftJson(options =>
                    options.SerializerSettings.ContractResolver =
                       new CamelCasePropertyNamesContractResolver());
-        }
 
+            services.AddIdentityServerAuthenticationMiddleware();
+            services.AddAuthorizationPolicies();
+            services.AddHttpContextAccessor();
+        }
 
         private async Task InitializeDatabaseAsync(IApplicationBuilder app)
         {
@@ -78,14 +87,15 @@ namespace MyGraphQL.Api
                 app.UseGraphiQl("/graphql");
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors("default"); 
+            app.UseCors("default");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHealthChecks("/health");
             });
-
-
         }
     }
 }
